@@ -1,0 +1,3 @@
+package com.aidost.mock.service;
+import com.aidost.mock.model.MockSession;import com.aidost.mock.repository.MockSessionRepository;import lombok.RequiredArgsConstructor;import org.springframework.stereotype.Service;import java.util.List;
+@Service @RequiredArgsConstructor public class MockServiceImpl implements MockService { private final MockSessionRepository repo; public MockSession create(Long userId, MockSession r){ r.setUserId(userId); return repo.save(r);} public List<MockSession> list(Long userId){ return repo.findAllByUserId(userId);} public MockSession get(Long userId, Long id){ return repo.findById(id).orElseThrow();}}
