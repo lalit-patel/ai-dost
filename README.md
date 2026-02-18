@@ -75,6 +75,18 @@ Update notes:
 curl -X PUT http://localhost:8083/dsa/me/problems/1/notes   -H "Content-Type: application/json"   -d '{"notes":"Revisit two-pointer optimization"}'
 ```
 
+## Production AI provider configuration
+`ai-gateway-service` now calls real providers (OpenAI / Anthropic) via API keys and model routing.
+
+Set environment variables before starting `ai-gateway-service`:
+```bash
+export OPENAI_API_KEY=<your_openai_key>
+export ANTHROPIC_API_KEY=<your_anthropic_key>
+```
+
+Routing is configurable in `ai-gateway-service/src/main/resources/application.yml` under `aidost.ai.routes`.
+If keys are missing for a configured provider, the service fails fast with a clear error.
+
 ## Web UI (React + TypeScript)
 
 A frontend scaffold is available under `ui/` using **Vite + React + TypeScript + React Router + TanStack Query + TailwindCSS**.
@@ -92,6 +104,8 @@ npm run dev
 cp ui/.env.example ui/.env
 ```
 2. Set values in `ui/.env`.
+
+For plug-and-play setup keep `VITE_USE_API_GATEWAY=true` and `VITE_API_GATEWAY_URL=http://localhost:8080`.
 
 You can either:
 - set `VITE_USE_API_GATEWAY=true` and route all calls through `VITE_API_GATEWAY_URL` (recommended; default works with this repo), or
