@@ -1,0 +1,6 @@
+import { FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useRegister } from "../hooks/useAuth";
+export function RegisterPage(){ const [name,setName]=useState(""); const [email,setEmail]=useState(""); const [password,setPassword]=useState(""); const {mutateAsync,isPending}=useRegister(); const nav=useNavigate();
+const onSubmit=async(e:FormEvent)=>{e.preventDefault(); await mutateAsync({name,email,password}); nav("/dashboard");};
+return <div className="max-w-md mx-auto mt-20 bg-white p-6 rounded shadow"><h1 className="text-xl font-semibold mb-4">Register</h1><form onSubmit={onSubmit} className="space-y-3"><input className="w-full border p-2" placeholder="Name" value={name} onChange={e=>setName(e.target.value)} /><input className="w-full border p-2" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} /><input type="password" className="w-full border p-2" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} /><button disabled={isPending} className="w-full bg-slate-900 text-white py-2 rounded">{isPending?"Creating account...":"Register"}</button></form><p className="text-sm mt-3">Already have account? <Link className="underline" to="/login">Login</Link></p></div>; }

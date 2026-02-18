@@ -1,0 +1,53 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: api-gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+        - id: user-profile-service
+          uri: lb://user-profile-service
+          predicates:
+            - Path=/profile/**
+        - id: dsa-service
+          uri: lb://dsa-service
+          predicates:
+            - Path=/dsa/**
+        - id: mock-service
+          uri: lb://mock-service
+          predicates:
+            - Path=/mock/**
+        - id: project-service
+          uri: lb://project-experience-service
+          predicates:
+            - Path=/project/**,/experience/**
+        - id: resume-service
+          uri: lb://resume-ats-service
+          predicates:
+            - Path=/resume/**
+        - id: readiness-service
+          uri: lb://readiness-service
+          predicates:
+            - Path=/readiness/**
+        - id: ai-gateway-service
+          uri: lb://ai-gateway-service
+          predicates:
+            - Path=/ai-gateway/**
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
