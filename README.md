@@ -113,6 +113,25 @@ export ANTHROPIC_API_KEY=<your_anthropic_key>
 Routing is configurable in `ai-gateway-service/src/main/resources/application.yml` under `aidost.ai.routes`.
 If keys are missing for a configured provider, the service fails fast with a clear error.
 
+## Free hosting deployment (Render Blueprint)
+I added `render.yaml` so you can deploy the full stack on Render free tier without editing service code.
+
+### Steps
+1. Push this repository to GitHub.
+2. In Render, choose **New + > Blueprint** and select this repo.
+3. Render will create:
+   - `ui` static site,
+   - `service-registry`, `api-gateway-service`, and all backend services,
+   - managed PostgreSQL database (`ai-dost-db`).
+4. After deploy, open the `ui` service URL.
+
+### Optional AI keys
+Set these in Render dashboard for `ai-gateway-service` to enable real providers:
+- `OPENAI_API_KEY`
+- `ANTHROPIC_API_KEY`
+
+Without keys, app still runs using `LOCAL` AI provider routes.
+
 ## Web UI (React + TypeScript)
 
 A frontend scaffold is available under `ui/` using **Vite + React + TypeScript + React Router + TanStack Query + TailwindCSS**.
