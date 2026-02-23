@@ -1,8 +1,6 @@
 server:
   port: 8088
 spring:
-  application:
-    name: ai-gateway-service
   datasource:
     url: jdbc:postgresql://localhost:5432/ai_dost
     username: postgres
@@ -11,39 +9,3 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-
-aidost:
-  ai:
-    keys:
-      openai-api-key: ${OPENAI_API_KEY:}
-      anthropic-api-key: ${ANTHROPIC_API_KEY:}
-    routes:
-      explain-dsa:
-        provider: OPENAI
-        model: gpt-4o-mini
-        tier: FREE
-      discuss-dsa:
-        provider: OPENAI
-        model: gpt-4o-mini
-        tier: FREE
-      generate-project-plan:
-        provider: ANTHROPIC
-        model: claude-3-5-sonnet-20241022
-        tier: PRO
-      prep-existing-project:
-        provider: ANTHROPIC
-        model: claude-3-5-sonnet-20241022
-        tier: PRO
-      generate-mock-questions:
-        provider: OPENAI
-        model: gpt-4o-mini
-        tier: FREE
-      evaluate-mock-answer:
-        provider: OPENAI
-        model: gpt-4o-mini
-        tier: FREE
