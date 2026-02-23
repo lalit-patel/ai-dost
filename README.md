@@ -6,6 +6,8 @@ AI-first job preparation platform designed as a Java 21 + Spring Boot microservi
 
 | Service | Port | Base Path | Responsibility |
 |---|---:|---|---|
+| service-registry | 8761 | n/a | Eureka discovery registry for all services |
+| api-gateway-service | 8080 | `/` | single-entry API gateway routing to all microservices |
 | auth-service | 8081 | `/auth` | registration/login, JWT issuance, plan + role claims |
 | user-profile-service | 8082 | `/profile` | candidate profile, goals, stack, preferences |
 | dsa-service | 8083 | `/dsa` | curated DSA problems + per-user states/notes |
@@ -25,3 +27,4 @@ AI-first job preparation platform designed as a Java 21 + Spring Boot microservi
 - DSA, Mock, Project/Experience, Resume services should call AI Gateway through stable DTO contracts.
 - AI Gateway exposes operation-specific methods and routes internally by `(operation, tier)` to `(provider, model)`.
 - Current implementation is stub-based so business flows are not blocked by external AI keys.
+
