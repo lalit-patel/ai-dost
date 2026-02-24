@@ -194,3 +194,22 @@ git push origin main
 ```
 
 Then set `main` as the default branch in your Git hosting settings and use it for production deployments.
+
+
+### If merge conflict happens while promoting to `main`
+```bash
+git checkout main
+git merge work
+# if conflict:
+git status
+# edit conflicted files and keep the correct final content
+# then mark resolved:
+git add <resolved-files>
+git commit -m "resolve merge conflicts from work into main"
+git push origin main
+```
+
+Tip: enable recorded conflict resolution to speed up repeated merges:
+```bash
+git config --global rerere.enabled true
+```
