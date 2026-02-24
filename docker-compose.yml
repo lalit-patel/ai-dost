@@ -1,0 +1,106 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ai_dost
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  service-registry:
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+      args: { MODULE: service-registry }
+    environment:
+      SERVER_PORT: 8761
+    ports: ["8761:8761"]
+
+  api-gateway-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+      args: { MODULE: api-gateway-service }
+    depends_on: [service-registry]
+    environment:
+      SERVER_PORT: 8080
+      EUREKA_DEFAULT_ZONE: http://service-registry:8761/eureka
+      UI_ORIGIN: http://localhost:3000
+    ports: ["8080:8080"]
+
+  auth-service:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: auth-service } }
+    depends_on: [postgres, service-registry]
+    environment: &svc_env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ai_dost
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      EUREKA_DEFAULT_ZONE: http://service-registry:8761/eureka
+    ports: ["8081:8081"]
+
+  user-profile-service:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: user-profile-service } }
+    depends_on: [postgres, service-registry]
+    environment: *svc_env
+    ports: ["8082:8082"]
+
+  dsa-service:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: dsa-service } }
+    depends_on: [postgres, service-registry]
+    environment: *svc_env
+    ports: ["8083:8083"]
+
+  mock-service:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: mock-service } }
+    depends_on: [postgres, service-registry]
+    environment: *svc_env
+    ports: ["8084:8084"]
+
+  project-experience-service:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: project-experience-service } }
+    depends_on: [postgres, service-registry]
+    environment: *svc_env
+    ports: ["8085:8085"]
+
+  resume-ats-service:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: resume-ats-service } }
+    depends_on: [postgres, service-registry]
+    environment: *svc_env
+    ports: ["8086:8086"]
+
+  readiness-service:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: readiness-service } }
+    depends_on: [postgres, service-registry]
+    environment: *svc_env
+    ports: ["8087:8087"]
+
+  ai-gateway-service:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: ai-gateway-service } }
+    depends_on: [postgres, service-registry]
+    environment:
+      <<: *svc_env
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AI_ROUTE_EXPLAIN_PROVIDER: ${AI_ROUTE_EXPLAIN_PROVIDER:-LOCAL}
+      AI_ROUTE_DISCUSS_PROVIDER: ${AI_ROUTE_DISCUSS_PROVIDER:-LOCAL}
+      AI_ROUTE_PROJECT_PROVIDER: ${AI_ROUTE_PROJECT_PROVIDER:-LOCAL}
+      AI_ROUTE_PREP_PROVIDER: ${AI_ROUTE_PREP_PROVIDER:-LOCAL}
+      AI_ROUTE_MOCK_PROVIDER: ${AI_ROUTE_MOCK_PROVIDER:-LOCAL}
+      AI_ROUTE_EVAL_PROVIDER: ${AI_ROUTE_EVAL_PROVIDER:-LOCAL}
+    ports: ["8088:8088"]
+
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+      args:
+        VITE_API_GATEWAY_URL: http://localhost:8080
+        VITE_USE_API_GATEWAY: "true"
+    depends_on: [api-gateway-service]
+    ports: ["3000:80"]

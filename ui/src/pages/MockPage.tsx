@@ -1,0 +1,4 @@
+import { FormEvent, useState } from "react";
+import { useCreateMockSession, useMockSessions } from "../hooks/useMock";
+export function MockPage(){ const {data}=useMockSessions(); const create=useCreateMockSession(); const [type,setType]=useState("DSA"); const submit=(e:FormEvent)=>{e.preventDefault(); create.mutate(type);};
+return <div className="space-y-4"><h1 className="text-2xl font-semibold">Mock Interviews</h1><form onSubmit={submit} className="bg-white p-3 rounded shadow flex gap-2"><select className="border p-2" value={type} onChange={e=>setType(e.target.value)}><option>DSA</option><option>TECH</option><option>BEHAVIORAL</option></select><button className="bg-slate-900 text-white px-3 py-1 rounded">Create Mock Session</button></form><div className="bg-white p-4 rounded shadow"><h2 className="font-semibold mb-2">Sessions</h2>{data?.map(s=><div key={s.id} className="border-b py-2">#{s.id} {s.type} - {s.status}</div>)}</div></div>; }
