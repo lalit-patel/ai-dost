@@ -27,4 +27,3 @@ AI-first job preparation platform designed as a Java 21 + Spring Boot microservi
 - DSA, Mock, Project/Experience, Resume services should call AI Gateway through stable DTO contracts.
 - AI Gateway exposes operation-specific methods and routes internally by `(operation, tier)` to `(provider, model)`.
 - Current implementation is stub-based so business flows are not blocked by external AI keys.
-
