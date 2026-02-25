@@ -1,0 +1,48 @@
+server:
+  port: ${SERVER_PORT:8088}
+spring:
+  application:
+    name: ai-gateway-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ai_dost}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    open-in-view: false
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8761/eureka}
+
+aidost:
+  ai:
+    keys:
+      openai-api-key: ${OPENAI_API_KEY:}
+      anthropic-api-key: ${ANTHROPIC_API_KEY:}
+    routes:
+      explain-dsa:
+        provider: ${AI_ROUTE_EXPLAIN_PROVIDER:LOCAL}
+        model: ${AI_ROUTE_EXPLAIN_MODEL:gpt-4o-mini}
+        tier: FREE
+      discuss-dsa:
+        provider: ${AI_ROUTE_DISCUSS_PROVIDER:LOCAL}
+        model: ${AI_ROUTE_DISCUSS_MODEL:gpt-4o-mini}
+        tier: FREE
+      generate-project-plan:
+        provider: ${AI_ROUTE_PROJECT_PROVIDER:LOCAL}
+        model: ${AI_ROUTE_PROJECT_MODEL:claude-3-5-sonnet-20241022}
+        tier: PRO
+      prep-existing-project:
+        provider: ${AI_ROUTE_PREP_PROVIDER:LOCAL}
+        model: ${AI_ROUTE_PREP_MODEL:claude-3-5-sonnet-20241022}
+        tier: PRO
+      generate-mock-questions:
+        provider: ${AI_ROUTE_MOCK_PROVIDER:LOCAL}
+        model: ${AI_ROUTE_MOCK_MODEL:gpt-4o-mini}
+        tier: FREE
+      evaluate-mock-answer:
+        provider: ${AI_ROUTE_EVAL_PROVIDER:LOCAL}
+        model: ${AI_ROUTE_EVAL_MODEL:gpt-4o-mini}
+        tier: FREE

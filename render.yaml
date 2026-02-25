@@ -1,0 +1,167 @@
+services:
+  - type: web
+    name: service-registry
+    runtime: java
+    plan: free
+    rootDir: service-registry
+    buildCommand: mvn -q -DskipTests package
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: SERVER_PORT
+        value: 8761
+
+  - type: web
+    name: api-gateway-service
+    runtime: java
+    plan: free
+    rootDir: api-gateway-service
+    buildCommand: mvn -q -DskipTests package
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: SERVER_PORT
+        value: 8080
+      - key: EUREKA_DEFAULT_ZONE
+        value: http://service-registry:8761/eureka
+      - key: UI_ORIGIN
+        fromService:
+          type: web
+          name: ui
+          property: url
+
+  - type: web
+    name: auth-service
+    runtime: java
+    plan: free
+    rootDir: auth-service
+    buildCommand: mvn -q -DskipTests package
+    startCommand: java -jar target/*.jar
+    envVars: &commonEnv
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: ai-dost-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: ai-dost-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: ai-dost-db
+          property: password
+      - key: EUREKA_DEFAULT_ZONE
+        value: http://service-registry:8761/eureka
+
+  - type: web
+    name: user-profile-service
+    runtime: java
+    plan: free
+    rootDir: user-profile-service
+    buildCommand: mvn -q -DskipTests package
+    startCommand: java -jar target/*.jar
+    envVars: *commonEnv
+
+  - type: web
+    name: dsa-service
+    runtime: java
+    plan: free
+    rootDir: dsa-service
+    buildCommand: mvn -q -DskipTests package
+    startCommand: java -jar target/*.jar
+    envVars: *commonEnv
+
+  - type: web
+    name: mock-service
+    runtime: java
+    plan: free
+    rootDir: mock-service
+    buildCommand: mvn -q -DskipTests package
+    startCommand: java -jar target/*.jar
+    envVars: *commonEnv
+
+  - type: web
+    name: project-experience-service
+    runtime: java
+    plan: free
+    rootDir: project-experience-service
+    buildCommand: mvn -q -DskipTests package
+    startCommand: java -jar target/*.jar
+    envVars: *commonEnv
+
+  - type: web
+    name: resume-ats-service
+    runtime: java
+    plan: free
+    rootDir: resume-ats-service
+    buildCommand: mvn -q -DskipTests package
+    startCommand: java -jar target/*.jar
+    envVars: *commonEnv
+
+  - type: web
+    name: readiness-service
+    runtime: java
+    plan: free
+    rootDir: readiness-service
+    buildCommand: mvn -q -DskipTests package
+    startCommand: java -jar target/*.jar
+    envVars: *commonEnv
+
+  - type: web
+    name: ai-gateway-service
+    runtime: java
+    plan: free
+    rootDir: ai-gateway-service
+    buildCommand: mvn -q -DskipTests package
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: ai-dost-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: ai-dost-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: ai-dost-db
+          property: password
+      - key: EUREKA_DEFAULT_ZONE
+        value: http://service-registry:8761/eureka
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: AI_ROUTE_EXPLAIN_PROVIDER
+        value: LOCAL
+      - key: AI_ROUTE_DISCUSS_PROVIDER
+        value: LOCAL
+      - key: AI_ROUTE_PROJECT_PROVIDER
+        value: LOCAL
+      - key: AI_ROUTE_PREP_PROVIDER
+        value: LOCAL
+      - key: AI_ROUTE_MOCK_PROVIDER
+        value: LOCAL
+      - key: AI_ROUTE_EVAL_PROVIDER
+        value: LOCAL
+
+  - type: web
+    name: ui
+    runtime: static
+    plan: free
+    rootDir: ui
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_USE_API_GATEWAY
+        value: "true"
+      - key: VITE_API_GATEWAY_URL
+        fromService:
+          type: web
+          name: api-gateway-service
+          property: url
+
+databases:
+  - name: ai-dost-db
+    plan: free
+    databaseName: ai_dost
+    user: postgres
