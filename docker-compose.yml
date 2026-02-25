@@ -95,6 +95,7 @@ services:
     ports: ["8088:8088"]
 
   ui:
+    profiles: ["ui"]
     build:
       context: ./ui
       dockerfile: Dockerfile

@@ -40,7 +40,7 @@ AI-first job preparation platform designed as a Java 21 + Spring Boot microservi
 mvn clean package -DskipTests
 ```
 
-### 2) Start the full stack with Docker Compose
+### 2) Start backend services with Docker Compose
 ```bash
 docker compose up --build
 ```
@@ -50,10 +50,25 @@ This starts:
 - Eureka Service Registry on `localhost:8761`
 - API Gateway on `localhost:8080`
 - All backend microservices (`8081`–`8088`)
-- UI on `http://localhost:3000`
 
-### 3) Optional AI provider keys
-The system runs with local/stubbed AI routing by default. If you want to use real providers, set these before `docker compose up`:
+### 3) Run UI locally (recommended)
+```bash
+cd ui
+npm install
+npm run dev
+```
+
+UI runs at `http://localhost:5173` and calls API Gateway at `http://localhost:8080` by default.
+
+### 4) Optional: run UI in Docker too
+```bash
+docker compose --profile ui up --build
+```
+
+This enables the `ui` service and serves it at `http://localhost:3000`.
+
+### 5) Optional AI provider keys
+The system runs with local/stubbed AI routing by default. If you want to use real providers, set these before `docker compose up` (or `docker compose --profile ui up`):
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
 
