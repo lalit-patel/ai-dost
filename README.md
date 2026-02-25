@@ -60,3 +60,5 @@ The system runs with local/stubbed AI routing by default. If you want to use rea
 ### Troubleshooting
 - If Maven cannot download dependencies, verify your network/firewall allows access to `https://repo.maven.apache.org/maven2`.
 - Ensure ports `3000`, `5432`, `8080`–`8088`, and `8761` are free.
+- On Windows, ensure Docker Desktop is running before `docker compose up --build` and that it is configured to use Linux containers/WSL2.
+- If you see `open //./pipe/docker_engine: The system cannot find the file specified`, start Docker Desktop (or the Docker Engine service) and retry from an elevated terminal.
