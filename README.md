@@ -46,7 +46,7 @@ docker compose up --build
 ```
 
 This starts:
-- PostgreSQL on `localhost:5432`
+- PostgreSQL on `localhost:5432` (user `postgres`, password `ubuntu`)
 - Eureka Service Registry on `localhost:8761`
 - API Gateway on `localhost:8080`
 - All backend microservices (`8081`–`8088`)
@@ -54,6 +54,7 @@ This starts:
 ### 3) Run UI locally (recommended)
 ```bash
 cd ui
+cp .env.example .env
 npm install
 npm run dev
 ```
