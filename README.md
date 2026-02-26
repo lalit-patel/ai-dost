@@ -46,7 +46,7 @@ docker compose up --build
 ```
 
 This starts:
-- PostgreSQL on `localhost:5432` (user `postgres`, password `ubuntu`)
+- PostgreSQL on `localhost:5432`
 - Eureka Service Registry on `localhost:8761`
 - API Gateway on `localhost:8080`
 - All backend microservices (`8081`–`8088`)
