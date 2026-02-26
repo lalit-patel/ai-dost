@@ -54,6 +54,7 @@ This starts:
 ### 3) Run UI locally (recommended)
 ```bash
 cd ui
+cp .env.example .env
 npm install
 npm run dev
 ```

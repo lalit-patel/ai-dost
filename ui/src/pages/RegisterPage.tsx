@@ -15,7 +15,7 @@ export function RegisterPage() {
     e.preventDefault();
     setError(null);
     try {
-      await mutateAsync({ name, email, password });
+      await mutateAsync({ displayName: name, email, password });
       nav("/dashboard");
     } catch (err) {
       const message =
