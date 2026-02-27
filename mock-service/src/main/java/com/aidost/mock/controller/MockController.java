@@ -1,3 +1,4 @@
 package com.aidost.mock.controller;
 import com.aidost.mock.model.MockSession;import com.aidost.mock.service.MockService;import lombok.RequiredArgsConstructor;import org.springframework.web.bind.annotation.*;import java.util.List;
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
 @RestController @RequestMapping("/mock/me/sessions") @RequiredArgsConstructor public class MockController { private final MockService service; @PostMapping public MockSession create(@RequestBody MockSession req){ return service.create(1L, req);} @GetMapping public List<MockSession> list(){ return service.list(1L);} @GetMapping("/{id}") public MockSession get(@PathVariable Long id){ return service.get(1L,id);} @PostMapping("/{id}/complete") public String complete(@PathVariable Long id){ return "Session "+id+" completed (stub)";} }
