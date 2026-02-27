@@ -46,7 +46,7 @@ docker compose up --build
 ```
 
 This starts:
-- PostgreSQL on `localhost:5432`
+- PostgreSQL on `localhost:5432` (user `postgres`, password `ubuntu`)
 - Eureka Service Registry on `localhost:8761`
 - API Gateway on `localhost:8080`
 - All backend microservices (`8081`–`8088`)
@@ -78,3 +78,5 @@ The system runs with local/stubbed AI routing by default. If you want to use rea
 - Ensure ports `3000`, `5432`, `8080`–`8088`, and `8761` are free.
 - On Windows, ensure Docker Desktop is running before `docker compose up --build` and that it is configured to use Linux containers/WSL2.
 - If you see `open //./pipe/docker_engine: The system cannot find the file specified`, start Docker Desktop (or the Docker Engine service) and retry from an elevated terminal.
+- Backend services in Compose now use `restart: unless-stopped`; if startup order causes transient failures, they should auto-recover once Postgres/Eureka are ready.
+- Check runtime status with `docker compose ps` and failing service logs with `docker compose logs -f <service-name>`.

@@ -13,6 +13,7 @@ services:
       retries: 10
 
   service-registry:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile.service
@@ -22,6 +23,7 @@ services:
     ports: ["8761:8761"]
 
   api-gateway-service:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile.service
@@ -34,6 +36,7 @@ services:
     ports: ["8080:8080"]
 
   auth-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: auth-service } }
     depends_on: [postgres, service-registry]
     environment: &svc_env
@@ -44,42 +47,49 @@ services:
     ports: ["8081:8081"]
 
   user-profile-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: user-profile-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8082:8082"]
 
   dsa-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: dsa-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8083:8083"]
 
   mock-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: mock-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8084:8084"]
 
   project-experience-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: project-experience-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8085:8085"]
 
   resume-ats-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: resume-ats-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8086:8086"]
 
   readiness-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: readiness-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8087:8087"]
 
   ai-gateway-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: ai-gateway-service } }
     depends_on: [postgres, service-registry]
     environment:
@@ -95,6 +105,7 @@ services:
     ports: ["8088:8088"]
 
   ui:
+    restart: unless-stopped
     profiles: ["ui"]
     build:
       context: ./ui
