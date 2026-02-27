@@ -1,11 +1,10 @@
-version: '3.9'
 services:
   postgres:
     image: postgres:16
     environment:
       POSTGRES_DB: ai_dost
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ubuntu
     ports: ["5432:5432"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -14,6 +13,7 @@ services:
       retries: 10
 
   service-registry:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile.service
@@ -23,6 +23,7 @@ services:
     ports: ["8761:8761"]
 
   api-gateway-service:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile.service
@@ -30,57 +31,65 @@ services:
     depends_on: [service-registry]
     environment:
       SERVER_PORT: 8080
-      EUREKA_DEFAULT_ZONE: http://service-registry:8761/eureka
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka
       UI_ORIGIN: http://localhost:3000
     ports: ["8080:8080"]
 
   auth-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: auth-service } }
     depends_on: [postgres, service-registry]
     environment: &svc_env
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ai_dost
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      EUREKA_DEFAULT_ZONE: http://service-registry:8761/eureka
+      SPRING_DATASOURCE_PASSWORD: ubuntu
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka
     ports: ["8081:8081"]
 
   user-profile-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: user-profile-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8082:8082"]
 
   dsa-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: dsa-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8083:8083"]
 
   mock-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: mock-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8084:8084"]
 
   project-experience-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: project-experience-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8085:8085"]
 
   resume-ats-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: resume-ats-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8086:8086"]
 
   readiness-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: readiness-service } }
     depends_on: [postgres, service-registry]
     environment: *svc_env
     ports: ["8087:8087"]
 
   ai-gateway-service:
+    restart: unless-stopped
     build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: ai-gateway-service } }
     depends_on: [postgres, service-registry]
     environment:
@@ -96,6 +105,8 @@ services:
     ports: ["8088:8088"]
 
   ui:
+    restart: unless-stopped
+    profiles: ["ui"]
     build:
       context: ./ui
       dockerfile: Dockerfile
