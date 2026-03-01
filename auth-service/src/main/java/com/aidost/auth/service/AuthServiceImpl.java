@@ -52,4 +52,18 @@ public class AuthServiceImpl implements AuthService {
                 .token(jwtService.generateToken(u.getId(), u.getRoles(), u.getPlan()))
                 .build();
     }
+
+    public AuthMeResponse me(String authorizationHeader) {
+        Long userId = jwtService.extractUserId(authorizationHeader);
+        UserAccount user = userId == null
+                ? repo.findAll().stream().findFirst().orElseThrow(() -> new NoSuchElementException("No users found"))
+                : repo.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+        return AuthMeResponse.builder()
+                .userId(user.getId())
+                .name(user.getDisplayName())
+                .email(user.getEmail())
+                .roles(user.getRoles())
+                .plan(user.getPlan())
+                .build();
+    }
 }
