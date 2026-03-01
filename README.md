@@ -92,12 +92,11 @@ mvn -pl api-gateway-service spring-boot:run
 
 ```bash
 cd ui
-cp .env.local.example .env.local
 npm install
 npm run dev
 ```
 
-UI runs at `http://localhost:5173` and targets API gateway at `http://localhost:8080`.
+UI runs at `http://localhost:5173` and targets API gateway at `http://localhost:8080` by default (even without `.env.local`).
 
 ---
 
@@ -108,6 +107,8 @@ UI runs at `http://localhost:5173` and targets API gateway at `http://localhost:
 - Auth via gateway: `http://localhost:8080/auth/login`
 
 You should see all backend services registered in Eureka.
+
+- If registration/login fails through gateway, the UI now auto-falls back to direct `auth-service` on `http://localhost:8081` for auth calls.
 
 ---
 
