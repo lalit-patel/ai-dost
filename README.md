@@ -1,82 +1,142 @@
-# ai-dost
+# ai-dost (localhost development)
 
-AI-first job preparation platform designed as a Java 21 + Spring Boot microservices system.
+This repo is a multi-module Spring Boot microservices system that can be run **fully on localhost without Docker**.
 
-## Architecture Overview
+## Services and ports
 
-| Service | Port | Base Path | Responsibility |
-|---|---:|---|---|
-| service-registry | 8761 | n/a | Eureka discovery registry for all services |
-| api-gateway-service | 8080 | `/` | single-entry API gateway routing to all microservices |
-| auth-service | 8081 | `/auth` | registration/login, JWT issuance, plan + role claims |
-| user-profile-service | 8082 | `/profile` | candidate profile, goals, stack, preferences |
-| dsa-service | 8083 | `/dsa` | curated DSA problems + per-user states/notes |
-| mock-service | 8084 | `/mock` | mock sessions, question/answer records |
-| project-experience-service | 8085 | `/project`, `/experience` | projects and work-experience narratives |
-| resume-ats-service | 8086 | `/resume` | structured resume + ATS generation stub |
-| readiness-service | 8087 | `/readiness` | rule-based readiness score aggregation |
-| ai-gateway-service | 8088 | `/ai-gateway` | provider-agnostic AI operations routing |
+| Service | Port | Base path |
+|---|---:|---|
+| service-registry | 8761 | n/a |
+| api-gateway-service | 8080 | `/` |
+| auth-service | 8081 | `/auth` |
+| user-profile-service | 8082 | `/profile` |
+| dsa-service | 8083 | `/dsa` |
+| mock-service | 8084 | `/mock` |
+| project-experience-service | 8085 | `/project`, `/experience` |
+| resume-ats-service | 8086 | `/resume` |
+| readiness-service | 8087 | `/readiness` |
+| ai-gateway-service | 8088 | `/ai-gateway` |
+| UI (Vite) | 5173 | `/` |
 
-## JWT and Security Model
-- Auth Service issues JWT with `sub` (userId), `roles`, and `plan` claims.
-- Downstream services can validate JWT (stubbed security setup included), extract claims, and gate endpoints via `@PreAuthorize`.
-- Roles supported: `CANDIDATE`, `MENTOR`, `RECRUITER`, `ADMIN`.
-- Plans supported: `FREE`, `PRO`.
+---
 
-## AI Gateway Integration Pattern
-- DSA, Mock, Project/Experience, Resume services should call AI Gateway through stable DTO contracts.
-- AI Gateway exposes operation-specific methods and routes internally by `(operation, tier)` to `(provider, model)`.
-- Current implementation is stub-based so business flows are not blocked by external AI keys.
+## 1) Prerequisites
 
-## Run Locally
-
-### Prerequisites
-- Java 21
+- Java 17+
 - Maven 3.9+
-- Docker + Docker Compose
+- Node.js 18+
+- PostgreSQL 14+
 
-### 1) Build all backend services
+---
+
+## 2) Local PostgreSQL setup (no Docker)
+
+### Create DB
+```bash
+psql -U postgres -f db/local/01-create-database.sql
+```
+
+### Create tables
+```bash
+psql -U postgres -d ai_dost -f db/local/02-create-tables.sql
+```
+
+> Default local credentials used by all services:
+> - username: `postgres`
+> - password: `postgres`
+> - db: `ai_dost`
+>
+> Override with environment variables if needed:
+> `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`
+
+---
+
+## 3) Build everything
+
+From repo root:
 ```bash
 mvn clean package -DskipTests
 ```
 
-### 2) Start backend services with Docker Compose
+---
+
+## 4) Start services (order matters)
+
+Open a separate terminal per service.
+
+### 4.1 Eureka
 ```bash
-docker compose up --build
+mvn -pl service-registry spring-boot:run
 ```
 
-This starts:
-- PostgreSQL on `localhost:5432` (user `postgres`, password `ubuntu`)
-- Eureka Service Registry on `localhost:8761`
-- API Gateway on `localhost:8080`
-- All backend microservices (`8081`–`8088`)
+### 4.2 Backend services
+```bash
+mvn -pl auth-service spring-boot:run
+mvn -pl user-profile-service spring-boot:run
+mvn -pl dsa-service spring-boot:run
+mvn -pl mock-service spring-boot:run
+mvn -pl project-experience-service spring-boot:run
+mvn -pl resume-ats-service spring-boot:run
+mvn -pl readiness-service spring-boot:run
+mvn -pl ai-gateway-service spring-boot:run
+```
 
-### 3) Run UI locally (recommended)
+### 4.3 API gateway
+```bash
+mvn -pl api-gateway-service spring-boot:run
+```
+
+---
+
+## 5) Start UI
+
 ```bash
 cd ui
-cp .env.example .env
+cp .env.local.example .env.local
 npm install
 npm run dev
 ```
 
-UI runs at `http://localhost:5173` and calls API Gateway at `http://localhost:8080` by default.
+UI runs at `http://localhost:5173` and targets API gateway at `http://localhost:8080`.
 
-### 4) Optional: run UI in Docker too
+---
+
+## 6) Verify system health
+
+- Eureka dashboard: `http://localhost:8761`
+- Gateway actuator: `http://localhost:8080/actuator/health`
+- Auth via gateway: `http://localhost:8080/auth/login`
+
+You should see all backend services registered in Eureka.
+
+---
+
+## 7) Test registration/login flow
+
+### Register
 ```bash
-docker compose --profile ui up --build
+curl -X POST http://localhost:8080/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"displayName":"Local User","email":"local.user@example.com","password":"Pass@123"}'
 ```
 
-This enables the `ui` service and serves it at `http://localhost:3000`.
+### Login
+```bash
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"local.user@example.com","password":"Pass@123"}'
+```
 
-### 5) Optional AI provider keys
-The system runs with local/stubbed AI routing by default. If you want to use real providers, set these before `docker compose up` (or `docker compose --profile ui up`):
-- `OPENAI_API_KEY`
-- `ANTHROPIC_API_KEY`
+### Validate `/auth/me`
+```bash
+TOKEN="<token from login>"
+curl http://localhost:8080/auth/me -H "Authorization: Bearer $TOKEN"
+```
 
-### Troubleshooting
-- If Maven cannot download dependencies, verify your network/firewall allows access to `https://repo.maven.apache.org/maven2`.
-- Ensure ports `3000`, `5432`, `8080`–`8088`, and `8761` are free.
-- On Windows, ensure Docker Desktop is running before `docker compose up --build` and that it is configured to use Linux containers/WSL2.
-- If you see `open //./pipe/docker_engine: The system cannot find the file specified`, start Docker Desktop (or the Docker Engine service) and retry from an elevated terminal.
-- Backend services in Compose now use `restart: unless-stopped`; if startup order causes transient failures, they should auto-recover once Postgres/Eureka are ready.
-- Check runtime status with `docker compose ps` and failing service logs with `docker compose logs -f <service-name>`.
+---
+
+## Notes
+
+- All services are configured for localhost Eureka (`http://localhost:8761/eureka`).
+- CORS is enabled for UI origins `http://localhost:5173` and `http://localhost:3000`.
+- API Gateway routes all frontend paths to proper services.
