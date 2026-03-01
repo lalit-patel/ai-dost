@@ -1,6 +1,6 @@
 # ai-dost (localhost development)
 
-This repo is a multi-module Spring Boot microservices system that can be run **fully on localhost without Docker**.
+This repo is a multi-module Spring Boot microservices system that can be run **fully on localhost**.
 
 ## Services and ports
 
@@ -29,7 +29,7 @@ This repo is a multi-module Spring Boot microservices system that can be run **f
 
 ---
 
-## 2) Local PostgreSQL setup (no Docker)
+## 2) Local PostgreSQL setup
 
 ### Create DB
 ```bash
