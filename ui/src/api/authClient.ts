@@ -3,7 +3,7 @@ import clients from "./client";
 import { AuthMeResponse, AuthResponse } from "./types";
 import { authStorage } from "../auth/storage";
 
-const directAuthBaseUrl = import.meta.env.VITE_AUTH_SERVICE_URL ?? "http://localhost:8081";
+const directAuthBaseUrl = import.meta.env.VITE_AUTH_SERVICE_URL ?? "/auth-direct";
 const directAuthClient = axios.create({
   baseURL: directAuthBaseUrl,
   headers: { "Content-Type": "application/json" },

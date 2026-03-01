@@ -2,7 +2,7 @@ import axios from "axios";
 import { authStorage } from "../auth/storage";
 
 const defaults = {
-  gateway: "http://localhost:8080",
+  gateway: "/api",
   auth: "http://localhost:8081",
   profile: "http://localhost:8082",
   dsa: "http://localhost:8083",

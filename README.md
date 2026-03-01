@@ -96,7 +96,7 @@ npm install
 npm run dev
 ```
 
-UI runs at `http://localhost:5173` and targets API gateway at `http://localhost:8080` by default (even without `.env.local`).
+UI runs at `http://localhost:5173` and uses Vite dev proxy by default (`/api` -> `http://localhost:8080`, `/auth-direct` -> `http://localhost:8081`) so browser CORS issues are avoided during local development.
 
 ---
 
