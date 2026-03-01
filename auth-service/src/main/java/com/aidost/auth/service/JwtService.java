@@ -8,4 +8,9 @@ public class JwtService {
   return Jwts.builder().subject(String.valueOf(userId)).claim("roles", roles).claim("plan", plan.name())
    .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis()+86400000)).signWith(key).compact();
  }
+ public Long extractUserId(String authorizationHeader){
+  if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) return null;
+  String token = authorizationHeader.substring(7);
+  return Long.parseLong(Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getSubject());
+ }
 }
